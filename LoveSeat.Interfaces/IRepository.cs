@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Threading.Tasks;
 using LoveSeat.Interfaces;
 
 namespace LoveSeat.Interfaces
 {
     public interface IRepository<T> where T : IBaseObject
     {
-        void Save(T item);
-        T Find(Guid id);
+        Task SaveAsync(T item);
+        Task<T> FindAsync(Guid id);
     }
 }

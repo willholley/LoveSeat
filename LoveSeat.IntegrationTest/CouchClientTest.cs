@@ -29,34 +29,34 @@ namespace LoveSeat.IntegrationTest
 		public void Setup()
 		{
 			client = new CouchClient(host, port, username, password, false,AuthenticationType.Cookie);
-			if (!client.HasDatabase(baseDatabase))
+			if (!client.HasDatabaseAsync(baseDatabase).Result)
 			{
-				client.CreateDatabase(baseDatabase);
+				client.CreateDatabaseAsync(baseDatabase).Wait();
 			}
-            if (!client.HasDatabase(replicateDatabase))
+            if (!client.HasDatabaseAsync(replicateDatabase).Result)
             {
-                client.CreateDatabase(replicateDatabase);
+                client.CreateDatabaseAsync(replicateDatabase).Wait();
             }
 		}
 		[TearDown]
 		public void TearDown()
 		{
             //delete the test database
-            if (client.HasDatabase(baseDatabase)) {
-                client.DeleteDatabase(baseDatabase);
+            if (client.HasDatabaseAsync(baseDatabase).Result) {
+                client.DeleteDatabaseAsync(baseDatabase).Wait();
             }
-            if (client.HasDatabase(replicateDatabase)) {
-                client.DeleteDatabase(replicateDatabase);
+            if (client.HasDatabaseAsync(replicateDatabase).Result) {
+                client.DeleteDatabaseAsync(replicateDatabase).Wait();
             }
-            if (client.HasUser("Leela")) {
-                client.DeleteAdminUser("Leela");
+            if (client.HasUserAsync("Leela").Result) {
+                client.DeleteAdminUserAsync("Leela").Wait();
             }
 		}
 
 		[Test]
-		public void Should_Trigger_Replication()
+		public async void Should_Trigger_Replication()
 		{
-			var obj  = client.TriggerReplication("http://Professor:Farnsworth@"+ host+":5984/" +replicateDatabase, baseDatabase);
+			var obj  = await client.TriggerReplicationAsync("http://Professor:Farnsworth@"+ host+":5984/" +replicateDatabase, baseDatabase);
 			Assert.IsTrue(obj != null);
 		}
         public class Bunny {
@@ -64,127 +64,127 @@ namespace LoveSeat.IntegrationTest
             public string Name { get; set; }
         }
         [Test]
-        public void Creating_A_Document_Should_Keep_Id_If_Supplied()
+        public async void Creating_A_Document_Should_Keep_Id_If_Supplied()
         {
             var doc = new Document<Bunny>(new Bunny());
             doc.Id = "myid";
             var db = client.GetDatabase(baseDatabase);
-            db.CreateDocument(doc);
-            var savedDoc = db.GetDocument("myid");
+            await db.CreateDocumentAsync(doc);
+            var savedDoc = await db.GetDocumentAsync("myid");
             Assert.IsNotNull(savedDoc, "Saved doc should be able to be retrieved by the same id");
         }
 
 		[Test]
-		public void Should_Create_Document_From_String()
+		public async void Should_Create_Document_From_String()
 		{
 			string obj = @"{""test"": ""prop""}";
 			var db = client.GetDatabase(baseDatabase);
-			var result = db.CreateDocument("fdas", obj);
-		    var document = db.GetDocument("fdas");
+			var result = await db.CreateDocumentAsync("fdas", obj);
+		    var document = await db.GetDocumentAsync("fdas");
 			Assert.IsNotNull(document);
 		}
         [Test]
-        public void Should_Save_Existing_Document()
+        public async void Should_Save_Existing_Document()
         {
             string obj = @"{""test"": ""prop""}";
             var db = client.GetDatabase(baseDatabase);
-            var result = db.CreateDocument("fdas", obj);
-            var doc = db.GetDocument("fdas");
+            var result = await db.CreateDocumentAsync("fdas", obj);
+            var doc = await db.GetDocumentAsync("fdas");
             doc["test"] = "newprop";
-            db.SaveDocument(doc);
-            var newresult= db.GetDocument("fdas");
+            await db.SaveDocumentAsync(doc);
+            var newresult = await db.GetDocumentAsync("fdas");
             Assert.AreEqual(newresult.Value<string>("test"), "newprop");
         }
 
 		[Test]
-		public void Should_Delete_Document()
+		public async void Should_Delete_Document()
 		{
 			var db = client.GetDatabase(baseDatabase);
-			db.CreateDocument("asdf", "{}");
-			var doc = db.GetDocument("asdf");
-			var result = 	db.DeleteDocument(doc.Id, doc.Rev);
-			Assert.IsNull(db.GetDocument("asdf"));
+			await db.CreateDocumentAsync("asdf", "{}");
+			var doc = await db.GetDocumentAsync("asdf");
+			var result = await db.DeleteDocumentAsync(doc.Id, doc.Rev);
+			Assert.IsNull(await db.GetDocumentAsync("asdf"));
 		}
 
 
 		[Test]
-		public void Should_Determine_If_Doc_Has_Attachment()
+		public async void Should_Determine_If_Doc_Has_Attachment()
 		{
 			var db = client.GetDatabase(baseDatabase);
-			db.CreateDocument(@"{""_id"":""fdsa""}");
+			await db.CreateDocumentAsync(@"{""_id"":""fdsa""}");
 			byte[] attachment = File.ReadAllBytes("../../Files/martin.jpg");
-			db.AddAttachment("fdsa" , attachment,"martin.jpg", "image/jpeg");
-			var doc = db.GetDocument("fdsa");
+			await db.AddAttachmentAsync("fdsa" , attachment,"martin.jpg", "image/jpeg");
+			var doc = await db.GetDocumentAsync("fdsa");
 			Assert.IsTrue(doc.HasAttachment);
 		}
 		[Test]
-		public void Should_Return_Attachment_Names()
+		public async void Should_Return_Attachment_Names()
 		{
 			var db = client.GetDatabase(baseDatabase);
-			db.CreateDocument(@"{""_id"":""upload""}");
+			await db.CreateDocumentAsync(@"{""_id"":""upload""}");
 			var attachment = File.ReadAllBytes("../../Files/martin.jpg");
-			db.AddAttachment("upload", attachment,  "martin.jpg", "image/jpeg");
-			var doc = db.GetDocument("upload");
+			await db.AddAttachmentAsync("upload", attachment,  "martin.jpg", "image/jpeg");
+			var doc = await db.GetDocumentAsync("upload");
 			Assert.IsTrue(doc.GetAttachmentNames().Contains("martin.jpg"));
 		}
 
 		[Test]
-		public void Should_Create_Admin_User()
+		public async void Should_Create_Admin_User()
 		{			
-			client.CreateAdminUser("Leela", "Turanga");
+			await client.CreateAdminUserAsync("Leela", "Turanga");
 		}
 
 		[Test]
-		public void Should_Delete_Admin_User()
+		public async void Should_Delete_Admin_User()
 		{
-			client.DeleteAdminUser("Leela");
+			await client.DeleteAdminUserAsync("Leela");
 		}
 
 		[Test]
-		public void Should_Get_Attachment()
+		public async void Should_Get_Attachment()
 		{
 			var db = client.GetDatabase(baseDatabase);
-			db.CreateDocument(@"{""_id"":""test_upload""}");
-			var doc = db.GetDocument("test_upload");
+			await db.CreateDocumentAsync(@"{""_id"":""test_upload""}");
+			var doc = await db.GetDocumentAsync("test_upload");
 			var attachment = File.ReadAllBytes("../../Files/test_upload.txt");
-			db.AddAttachment("test_upload", attachment, "test_upload.txt", "text/html");
-			var stream = db.GetAttachmentStream(doc, "test_upload.txt");
-			using (StreamReader sr = new StreamReader(stream))
+			await db.AddAttachmentAsync("test_upload", attachment, "test_upload.txt", "text/html");
+			var stream = await db.GetAttachmentStreamAsync(doc, "test_upload.txt");
+			using (var sr = new StreamReader(stream))
 			{
 				string result = sr.ReadToEnd();
 				Assert.IsTrue(result == "test");	
 			}			
 		}
 		[Test]
-		public void Should_Delete_Attachment()
+		public async void Should_Delete_Attachment()
 		{
 			var db = client.GetDatabase(baseDatabase);
-			db.CreateDocument(@"{""_id"":""test_delete""}");
-			var doc = db.GetDocument("test_delete");
+			await db.CreateDocumentAsync(@"{""_id"":""test_delete""}");
+			var doc = await db.GetDocumentAsync("test_delete");
 			var attachment = File.ReadAllBytes("../../Files/test_upload.txt");
-			db.AddAttachment("test_delete", attachment, "test_upload.txt", "text/html");
-			db.DeleteAttachment("test_delete", "test_upload.txt");
-			var retrieved = db.GetDocument("test_delete");
+			await db.AddAttachmentAsync("test_delete", attachment, "test_upload.txt", "text/html");
+			await db.DeleteAttachmentAsync("test_delete", "test_upload.txt");
+			var retrieved = await db.GetDocumentAsync("test_delete");
 			Assert.IsFalse(retrieved.HasAttachment);
 		}
         [Test]
-        public void Should_Return_Etag_In_ViewResults()
+        public async void Should_Return_Etag_In_ViewResults()
         {
             var db = client.GetDatabase(baseDatabase);
-            db.CreateDocument(@"{""_id"":""test_eTag""}");
-            ViewResult result = db.GetAllDocuments();
+            await db.CreateDocumentAsync(@"{""_id"":""test_eTag""}");
+            ViewResult result =  await db.GetAllDocumentsAsync();
            Assert.IsTrue(!string.IsNullOrEmpty(result.Etag));
         }
 
         [Test]
-        public void Should_Persist_Property()
+        public async void Should_Persist_Property()
         {
             var db = client.GetDatabase(baseDatabase);
             var company = new Company();
             company.Id = "1234";
             company.Name = "Whiteboard-IT";
-            db.CreateDocument(company);
-            var doc = db.GetDocument<Company>("1234");
+            await db.CreateDocumentAsync(company);
+            var doc = await db.GetDocumentAsync<Company>("1234");
             Assert.AreEqual(company.Name, doc.Name);
         }
         [Test]
@@ -202,26 +202,26 @@ namespace LoveSeat.IntegrationTest
             Assert.IsTrue(result.Contains("Whiteboard-it"));
         }
 	    [Test]
-	    public void Should_Get_304_If_ETag_Matches()
+	    public async void Should_Get_304_If_ETag_Matches()
 	    {
             var db = client.GetDatabase(baseDatabase);
-            db.CreateDocument(@"{""_id"":""test_eTag_exception""}");
-            ViewResult result = db.GetAllDocuments();
-	        ViewResult cachedResult = db.GetAllDocuments(new ViewOptions {Etag = result.Etag});
+            await db.CreateDocumentAsync(@"{""_id"":""test_eTag_exception""}");
+            ViewResult result = await db.GetAllDocumentsAsync();
+	        ViewResult cachedResult = await db.GetAllDocumentsAsync(new ViewOptions {Etag = result.Etag});
             Assert.AreEqual(cachedResult.StatusCode, HttpStatusCode.NotModified);
 	    } 
         [Test]
-        public void Should_Get_Id_From_Existing_Document()
+        public async void Should_Get_Id_From_Existing_Document()
         {
             var db = client.GetDatabase(baseDatabase);
             string id = "test_should_get_id";
-            db.CreateDocument("{\"_id\":\""+ id+"\"}");
-            Document doc= db.GetDocument(id);
+            await db.CreateDocumentAsync("{\"_id\":\""+ id+"\"}");
+            Document doc= await db.GetDocumentAsync(id);
             Assert.AreEqual(id, doc.Id);
         }
 
         [Test]
-        public void Should_Populate_Items_When_IncludeDocs_Set_In_ViewOptions()
+        public async void Should_Populate_Items_When_IncludeDocs_Set_In_ViewOptions()
         {
             string designDoc = "test";
             string viewName = "testView";
@@ -245,18 +245,20 @@ namespace LoveSeat.IntegrationTest
                           };
 
             var db = client.GetDatabase(baseDatabase);
-            db.CreateDocument(doc._id, JsonConvert.SerializeObject(doc, Formatting.Indented, settings));
+            await db.CreateDocumentAsync(doc._id, JsonConvert.SerializeObject(doc, Formatting.Indented, settings));
 
             var company = new Company();
             company.Name = "foo";
-            db.CreateDocument(company);
+            await db.CreateDocumentAsync(company);
 
             // Without IncludeDocs
-            Assert.IsNull(db.View<Company>(viewName, designDoc).Items.ToList()[0]);
+            var view = await db.ViewAsync<Company>(viewName, designDoc);
+            Assert.IsNull(view.Items.ToList()[0]);
 
             // With IncludeDocs
             ViewOptions options = new ViewOptions { IncludeDocs = true };
-            Assert.AreEqual("foo", db.View<Company>(viewName, options, designDoc).Items.ToList()[0].Name);
+            view = await db.ViewAsync<Company>(viewName, options, designDoc);
+            Assert.AreEqual("foo", view.Items.ToList()[0].Name);
         }
 	}
     public class Company : IBaseObject

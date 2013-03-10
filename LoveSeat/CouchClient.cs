@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 using LoveSeat.Support;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace LoveSeat
@@ -16,7 +18,7 @@ namespace LoveSeat
     public class CouchClient : CouchBase
     {
         // Authentication type used in request to CouchDB
-        protected readonly AuthenticationType authType;
+        protected new readonly AuthenticationType authType;
 
         /// <summary>
         /// This is only intended for use if your CouchDb is in Admin Party
@@ -76,21 +78,21 @@ namespace LoveSeat
         /// <param name="target">Uri or database name of database to replicate to</param>
         /// <param name="continuous">Whether or not CouchDB should continue to replicate going forward on it's own</param>
         /// <returns></returns>
-        public CouchResponse TriggerReplication(string source, string target, bool continuous)
+        public async Task<CouchResponse> TriggerReplicationAsync(string source, string target, bool continuous)
         {
-            var request = GetRequest(baseUri + "_replicate");
+            var request = await GetRequestAsync(baseUri + "_replicate");
 
             var options = new ReplicationOptions(source, target, continuous);
-            var response = request.Post()
+            var response = await request.Post()
                 .Data(options.ToString())
-                .GetResponse();
+                .GetResponseAsync();
 
             return response.GetJObject();
         }
 
-        public CouchResponse TriggerReplication(string source, string target)
+        public async Task<CouchResponse> TriggerReplicationAsync(string source, string target)
         {
-            return TriggerReplication(source, target, false);
+            return await TriggerReplicationAsync(source, target, false);
         }
 
         /// <summary>
@@ -98,18 +100,24 @@ namespace LoveSeat
         /// </summary>
         /// <param name="databaseName">Name of new database</param>
         /// <returns></returns>
-        public CouchResponse CreateDatabase(string databaseName)
+        public async Task<CouchResponse> CreateDatabaseAsync(string databaseName)
         {
-            return GetRequest(baseUri + databaseName).Put().GetResponse().GetJObject();
+            var request = await GetRequestAsync(baseUri + databaseName);
+            var response = await request.Put().GetResponseAsync();
+               
+            return response.GetJObject();
         }
         /// <summary>
         /// Deletes the specified database
         /// </summary>
         /// <param name="databaseName">Database to delete</param>
         /// <returns></returns>
-        public CouchResponse DeleteDatabase(string databaseName)
+        public async Task<CouchResponse> DeleteDatabaseAsync(string databaseName)
         {
-            return GetRequest(baseUri + databaseName).Delete().GetResponse().GetJObject();
+            var request = await GetRequestAsync(baseUri + databaseName);
+            var response = await  request.Delete().GetResponseAsync();
+            
+            return response.GetJObject();
         }
 
         /// <summary>
@@ -128,18 +136,19 @@ namespace LoveSeat
         /// <param name="usernameToCreate"></param>
         /// <param name="passwordToCreate"></param>
         /// <returns></returns>
-        public CouchResponse CreateAdminUser(string usernameToCreate, string passwordToCreate)
+        public async Task<CouchResponse> CreateAdminUserAsync(string usernameToCreate, string passwordToCreate)
         {
             //Creates the user in the local.ini
-            var iniResult = GetRequest(baseUri + "_config/admins/" + HttpUtility.UrlEncode(usernameToCreate))
-                .Put().Json().Data("\"" + passwordToCreate + "\"").GetResponse();
+            var request = await GetRequestAsync(baseUri + "_config/admins/" + HttpUtility.UrlEncode(usernameToCreate));
+            var iniResult = await request.Put().Json().Data("\"" + passwordToCreate + "\"").GetResponseAsync();
 
             var user = @"{ ""name"": ""%name%"",
   ""_id"": ""org.couchdb.user:%name%"", ""type"": ""user"", ""roles"": [],
 }".Replace("%name%", usernameToCreate).Replace("\r\n", "");
-            var docResult = GetRequest(baseUri + "_users/org.couchdb.user:" + HttpUtility.UrlEncode(usernameToCreate))
-                .Put().Json().Data(user).GetResponse().GetJObject();
-            return docResult;
+            request = await GetRequestAsync(baseUri + "_users/org.couchdb.user:" + HttpUtility.UrlEncode(usernameToCreate));
+
+            var response = await request.Put().Json().Data(user).GetResponseAsync();
+            return response.GetJObject();
 
         }
 
@@ -147,17 +156,17 @@ namespace LoveSeat
         /// Deletes admin user  (if you have permission)
         /// </summary>
         /// <param name="userToDelete"></param>
-        public void DeleteAdminUser(string userToDelete)
+        public async Task DeleteAdminUserAsync(string userToDelete)
         {
-            var iniResult = GetRequest(baseUri + "_config/admins/" + HttpUtility.UrlEncode(userToDelete))
-                .Delete().Json().GetResponse();
+            var request = await GetRequestAsync(baseUri + "_config/admins/" + HttpUtility.UrlEncode(userToDelete));
+            var iniResult = await request.Delete().Json().GetResponseAsync();
 
             var userDb = this.GetDatabase("_users");
             var userId = "org.couchdb.user:" + HttpUtility.UrlEncode(userToDelete);
-            var userDoc = userDb.GetDocument(userId);
+            var userDoc = await userDb.GetDocumentAsync(userId);
             if (userDoc != null)
             {
-                userDb.DeleteDocument(userDoc.Id, userDoc.Rev);
+                await userDb.DeleteDocumentAsync(userDoc.Id, userDoc.Rev);
             }
         }
 
@@ -166,10 +175,10 @@ namespace LoveSeat
         /// </summary>
         /// <param name="databaseName"></param>
         /// <returns></returns>
-      public bool HasDatabase(string databaseName) {
-            var request = GetRequest(baseUri + databaseName).Timeout(-1);
+      public async Task<bool> HasDatabaseAsync(string databaseName) {
+            var request = await GetRequestAsync(baseUri + databaseName);
+            var response = await request.Timeout(-1).GetResponseAsync();
 
-            var response = request.GetResponse();
             var pDocResult = new Document(response.GetResponseString());
 
             if (pDocResult["error"] == null) {
@@ -186,9 +195,9 @@ namespace LoveSeat
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public bool HasUser(string userId)
+        public async Task<bool> HasUserAsync(string userId)
         {
-            return GetUser(userId) != null;
+            return await GetUserAsync(userId) != null;
         }
 
         /// <summary>
@@ -196,11 +205,11 @@ namespace LoveSeat
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public Document GetUser(string userId)
+        public async Task<Document> GetUserAsync(string userId)
         {
             var db = new CouchDatabase(baseUri, "_users", username, password, this.authType);
             userId = "org.couchdb.user:" + HttpUtility.UrlEncode(userId);
-            return db.GetDocument(userId);
+            return await db.GetDocumentAsync(userId);
         }
 
 
@@ -210,12 +219,11 @@ namespace LoveSeat
         /// <param name="usernameToCreate"></param>
         /// <param name="passwordToCreate"></param>
         /// <returns></returns>
-        public CouchResponse CreateUser(string usernameToCreate, string passwordToCreate)
+        public async Task<CouchResponse> CreateUserAsync(string usernameToCreate, string passwordToCreate)
         {
-
             var user = "";
             //check if user exists already
-            Document cUser = GetUser(usernameToCreate);
+            Document cUser = await GetUserAsync(usernameToCreate);
 
             if (cUser != null) // add revision number to update existing document
             {
@@ -237,16 +245,16 @@ namespace LoveSeat
                 .Replace("%salt%", salt)
                 .Replace("\r\n", "");
 
-            var docResult = GetRequest(baseUri + "_users/org.couchdb.user:" + HttpUtility.UrlEncode(usernameToCreate))
-                .Put().Json().Data(user).GetResponse();
+            var docRequest = await GetRequestAsync(baseUri + "_users/org.couchdb.user:" + HttpUtility.UrlEncode(usernameToCreate));
+            var dosResponse = await  docRequest.Put().Json().Data(user).GetResponseAsync();
 
-            if (docResult.StatusCode == HttpStatusCode.Created)
+            if (dosResponse.StatusCode == HttpStatusCode.Created)
             {
-                return docResult.GetJObject();
+                return dosResponse.GetJObject();
             }
             else
             {
-                throw new WebException("An error occurred when creating a user.  Status code: " + docResult.StatusDescription);
+                throw new WebException("An error occurred when creating a user.  Status code: " + dosResponse.StatusDescription);
             }
         }
 
@@ -254,14 +262,14 @@ namespace LoveSeat
         /// Deletes user  (if you have permission)
         /// </summary>
         /// <param name="userToDelete"></param>
-        public void DeleteUser(string userToDelete)
+        public async void DeleteUserAsync(string userToDelete)
         {
             var userDb = this.GetDatabase("_users");
             var userId = "org.couchdb.user:" + HttpUtility.UrlEncode(userToDelete);
-            var userDoc = userDb.GetDocument(userId);
+            var userDoc = await userDb.GetDocumentAsync(userId);
             if (userDoc != null)
             {
-                userDb.DeleteDocument(userDoc.Id, userDoc.Rev);
+                await userDb.DeleteDocumentAsync(userDoc.Id, userDoc.Rev);
             }
             else
             {
@@ -275,9 +283,8 @@ namespace LoveSeat
         /// </summary>
         /// <param name="count"></param>
         /// <returns></returns>
-        public UniqueIdentifiers GetUUID(int count)
+        public async Task<UniqueIdentifiers> GetUUIDAsync(int count)
         {
-
             string request = baseUri + "_uuids";
 
             if (count == 1)
@@ -290,11 +297,11 @@ namespace LoveSeat
                 request = request + "?Count=" + Convert.ToString(count);
             }
 
-            var x = GetRequest(request);
-            String str = x.Get().Json().GetResponse().GetJObject().ToString();
-            UniqueIdentifiers y = Newtonsoft.Json.JsonConvert.DeserializeObject<UniqueIdentifiers>(str);
-
-            return y;
+            var x = await GetRequestAsync(request);
+            var response = await x.Get().Json().GetResponseAsync();
+            
+            var str = response.GetJObject().ToString();
+            return JsonConvert.DeserializeObject<UniqueIdentifiers>(str);
 
         }
     }
