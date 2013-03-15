@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Web;
-using LoveSeat.Interfaces;
+using LoveSeat.Async.Interfaces;
 using Newtonsoft.Json.Linq;
 
-namespace LoveSeat
+namespace LoveSeat.Async
 {
     public interface IPageableModel
     {

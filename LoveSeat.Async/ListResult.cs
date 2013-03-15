@@ -1,9 +1,8 @@
-﻿using System;
-using System.Net;
-using LoveSeat.Interfaces;
-using LoveSeat.Support;
+﻿using System.Net;
+using LoveSeat.Async.Interfaces;
+using LoveSeat.Async.Support;
 
-namespace LoveSeat
+namespace LoveSeat.Async
 {
     public class ListResult : IListResult
     {

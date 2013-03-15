@@ -1,9 +1,8 @@
-﻿using LoveSeat.Interfaces;
-using LoveSeat.Support;
+﻿using LoveSeat.Async.Interfaces;
 using Moq;
 using NUnit.Framework;
 
-namespace LoveSeat.IntegrationTest
+namespace LoveSeat.Async.IntegrationTest
 {
     [TestFixture]
     public class PagingHelperTest

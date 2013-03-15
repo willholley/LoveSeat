@@ -1,9 +1,10 @@
 ﻿using System;
+using LoveSeat.Async.Support;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
-namespace LoveSeat.IntegrationTest
+namespace LoveSeat.Async.IntegrationTest
 {
     [TestFixture]
     public class NewtonSoftTests

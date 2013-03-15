@@ -4,14 +4,13 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
-using LoveSeat.Interfaces;
+using LoveSeat.Async.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using NUnit.Framework;
-using LoveSeat;
 
-namespace LoveSeat.IntegrationTest
+namespace LoveSeat.Async.IntegrationTest
 {
     [TestFixture]
 	public class CouchClientTest

@@ -2,11 +2,11 @@
 using System.Net;
 using System.Threading.Tasks;
 using System.Web;
-using LoveSeat.Support;
+using LoveSeat.Async.Support;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace LoveSeat
+namespace LoveSeat.Async
 {
     // type of authentication used in request to CouchDB
     public enum AuthenticationType

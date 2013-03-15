@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace LoveSeat.Interfaces
+namespace LoveSeat.Async.Interfaces
 {
     public interface IListResult: System.IEquatable<IListResult>
     {

@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace LoveSeat
+namespace LoveSeat.Async
 {
    public  class CouchException : System.Exception
     {

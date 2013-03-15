@@ -2,7 +2,7 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace LoveSeat.Support
+namespace LoveSeat.Async.Support
 {
     public abstract class CouchBase
     {

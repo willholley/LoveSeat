@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Net;
 using Newtonsoft.Json.Linq;
 
-namespace LoveSeat.Interfaces
+namespace LoveSeat.Async.Interfaces
 {
     public interface IViewResult : System.IEquatable<IListResult>
     {

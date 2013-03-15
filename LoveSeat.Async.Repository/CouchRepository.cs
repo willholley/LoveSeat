@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using LoveSeat.Interfaces;
+using LoveSeat.Async.Interfaces;
 
-namespace LoveSeat.Repositories
+namespace LoveSeat.Async.Repositories
 {
     public class CouchRepository<T> : IRepository<T> where T : IBaseObject
     {

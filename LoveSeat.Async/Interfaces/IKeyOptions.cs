@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 
-namespace LoveSeat.Interfaces
+namespace LoveSeat.Async.Interfaces
 {
     public interface IKeyOptions
     {

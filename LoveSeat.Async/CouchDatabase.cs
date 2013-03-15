@@ -4,12 +4,12 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web;
-using LoveSeat.Interfaces;
-using LoveSeat.Support;
+using LoveSeat.Async.Interfaces;
+using LoveSeat.Async.Support;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace LoveSeat
+namespace LoveSeat.Async
 {
     public class CouchDatabase : CouchBase, IDocumentDatabase
     {

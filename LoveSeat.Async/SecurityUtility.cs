@@ -7,7 +7,7 @@ using System.Security.Cryptography;
 /// </summary>
 
 
-namespace LoveSeat
+namespace LoveSeat.Async
 {
     public class HashIt
     {

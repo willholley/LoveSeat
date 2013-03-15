@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Accounting.Domain;
-using LoveSeat.Interfaces;
+using LoveSeat.Async.Interfaces;
 
-namespace LoveSeat.Repositories
+namespace LoveSeat.Async.Repositories
 {
     public abstract class AuditableRepository<T> : CouchRepository<T> where T : IAuditableRecord
     {

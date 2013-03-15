@@ -1,9 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 
-namespace LoveSeat.Interfaces
+namespace LoveSeat.Async.Interfaces
 {
     public interface IDocumentDatabase
     {

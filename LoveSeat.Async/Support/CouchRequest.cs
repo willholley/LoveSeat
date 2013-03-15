@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Newtonsoft.Json.Linq;
 
-namespace LoveSeat.Support {
+namespace LoveSeat.Async.Support {
     public class CouchRequest {
         private const string INVALID_USERNAME_OR_PASSWORD = "reason=Name or password is incorrect";
         private const string NOT_AUTHORIZED = "reason=You are not authorized to access this db.";

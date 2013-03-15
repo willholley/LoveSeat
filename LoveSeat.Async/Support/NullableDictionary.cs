@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace LoveSeat.Support
+namespace LoveSeat.Async.Support
 {
     public class CouchDictionary<Y> : NullableDictionary<string, Y>
     {      

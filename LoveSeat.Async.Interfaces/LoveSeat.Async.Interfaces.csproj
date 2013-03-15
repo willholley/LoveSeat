@@ -8,7 +8,7 @@
     <ProjectGuid>{18833FC5-9145-451D-82D4-41A1886B0BE7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LoveSeat.Interfaces</RootNamespace>
+    <RootNamespace>LoveSeat.Async.Interfaces</RootNamespace>
     <AssemblyName>LoveSeat.Async.Interfaces</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

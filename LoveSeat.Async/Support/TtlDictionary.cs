@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace LoveSeat.Support
+namespace LoveSeat.Async.Support
 {
     internal class TtlDictionary<X, Y>
     {

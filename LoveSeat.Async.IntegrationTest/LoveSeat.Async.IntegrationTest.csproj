@@ -8,7 +8,7 @@
     <ProjectGuid>{7496CEA9-442C-4468-8350-54F34693F64A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LoveSeat.IntegrationTest</RootNamespace>
+    <RootNamespace>LoveSeat.Async.IntegrationTest</RootNamespace>
     <AssemblyName>LoveSeat.Async.IntegrationTest</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

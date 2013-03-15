@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Web;
-using LoveSeat.Interfaces;
-using LoveSeat.Support;
+using LoveSeat.Async.Interfaces;
+using LoveSeat.Async.Support;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace LoveSeat
+namespace LoveSeat.Async
 {
     public class ViewResult<T> : ViewResult
     {

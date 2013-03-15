@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
 
-namespace LoveSeat.Interfaces
+namespace LoveSeat.Async.Interfaces
 {
     public interface IViewOptions
     {

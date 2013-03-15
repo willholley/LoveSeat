@@ -1,4 +1,4 @@
-namespace LoveSeat.Support
+namespace LoveSeat.Async.Support
 {
 	public class ReplicationOptions
 	{

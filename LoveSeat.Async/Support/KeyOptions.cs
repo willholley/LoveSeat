@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Web;
-using LoveSeat.Interfaces;
+﻿using System.Web;
+using LoveSeat.Async.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 
-namespace LoveSeat
+namespace LoveSeat.Async.Support
 {
     public class KeyOptions : IKeyOptions
     {

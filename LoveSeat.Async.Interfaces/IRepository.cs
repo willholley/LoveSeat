@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using LoveSeat.Interfaces;
 
-namespace LoveSeat.Interfaces
+namespace LoveSeat.Async.Interfaces
 {
     public interface IRepository<T> where T : IBaseObject
     {

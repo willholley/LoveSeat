@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using LoveSeat.Interfaces;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
+using LoveSeat.Async.Interfaces;
+using LoveSeat.Async.Support;
 
-namespace LoveSeat
+namespace LoveSeat.Async
 {
     public class ViewOptions : IViewOptions
     {
