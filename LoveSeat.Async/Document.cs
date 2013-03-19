@@ -29,8 +29,13 @@ namespace LoveSeat.Async
             Values = new List<Document>();
         }
 
+        public Documents(IEnumerable<Document> values)
+        {
+            Values = values;
+        }
+
         [JsonProperty("docs")]
-        public List<Document> Values { get; set; }
+        public IEnumerable<Document> Values { get; set; }
     }
 
     /// <summary>
